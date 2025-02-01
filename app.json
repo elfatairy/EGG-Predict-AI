@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "epilepsy",
+    "name": "EEG Predict AI",
     "slug": "epilepsy",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -15,7 +15,8 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.omarhassan.egg"
     },
     "web": {
       "bundler": "metro",
@@ -32,10 +33,27 @@
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"
         }
+      ],
+      [
+        "expo-asset",
+        {
+          "assets": [
+            "./assets/images/maledoctor.png",
+            "./assets/images/femaledoctor.png"
+          ]
+        }
       ]
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "2e235222-5765-45b0-b071-c7ddc46e005c"
+      }
     }
   }
 }

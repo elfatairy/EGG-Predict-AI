@@ -10,6 +10,7 @@ import { useEffect, useRef } from "react";
 import * as Location from 'expo-location';
 import Toast from 'react-native-toast-message';
 import { updateLocation } from "@/backend/data";
+import { setItem } from "@/backend/storage";
 
 export default function Index() {
   const { setIsLoading } = useLoading();
@@ -21,20 +22,21 @@ export default function Index() {
       const res = await getPatientType();
       if (!res) {
         alert("There is some issue");
-
+        
         setIsLoading(true);
         const res = await logoutHandler();
         setIsLoading(false);
-
+        
         if (res == true) {
           router.replace('/(auth)/login');
         } else {
           alert(router);
         }
-
+        
         return;
       }
-
+      await setItem('patientType', res);
+      
       const _tabs: CustomTabProps[] = [
         {
           name: "main",

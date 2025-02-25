@@ -1,4 +1,4 @@
-import { getDoctors } from '@/backend/data';
+import { getDoctors, isReportSubmittedToday, saveReport } from '@/backend/data';
 import { Doctor } from '@/backend/types';
 import Loading from '@/components/Loading';
 import LogoutButton from '@/components/LogoutButton';
@@ -11,10 +11,16 @@ import { Image } from 'expo-image';
 import { streamClient } from '@/streamConfig';
 import InfoButton from '@/components/InfoButton';
 import LocationButton from '@/components/LocationButton';
+import ReportPopup from '@/components/ReportPopup';
+import { getItem } from '@/backend/storage';
+import Toast from 'react-native-toast-message';
 
 function index() {
   const [search, setSearch] = useState("");
   const [doctors, setDoctors] = useState<Doctor[]>([]);
+  const [showReport, setShowReport] = useState(false);
+  const [patientType, setPatientType] = useState<'epilepsy' | 'alzheimer' | null>();
+  const [reportSubmittedToday, setReportSubmittedToday] = useState(true);
 
   async function getData() {
     const _doctors = await getDoctors();
@@ -24,6 +30,8 @@ function index() {
     }
 
     setDoctors(_doctors);
+    setReportSubmittedToday(await isReportSubmittedToday());
+    setPatientType(await getItem("patientType"))
   }
   useEffect(() => {
     getData();
@@ -41,7 +49,28 @@ function index() {
     });
   }
 
-  if (!doctors || !auth.currentUser) return <Loading />
+  async function handleSubmit(responses: any) {
+    console.log("Report responses:", responses)
+    if (await saveReport(responses)) {
+      Toast.show({
+        type: 'success',
+        text1: 'The report was submitted successfully',
+        position: 'bottom',
+        bottomOffset: 110
+      })
+      setReportSubmittedToday(true);
+    } else {
+      Toast.show({
+        type: 'error',
+        text1: 'Error submitting the report',
+        position: 'bottom',
+        bottomOffset: 110
+      })
+    }
+    setShowReport(false);
+  }
+
+  if (!doctors || !auth.currentUser || !patientType) return <Loading />
 
   return (
     <View style={styles.container}>
@@ -61,7 +90,12 @@ function index() {
       <View style={styles.content}>
         <SearchBar setSearch={setSearch} />
         <View style={styles.block}>
-          <Text style={styles.blockTitle}>Doctors</Text>
+          <View style={styles.blockHeader}>
+            <Text style={styles.blockTitle}>Doctors</Text>
+            {!reportSubmittedToday && <TouchableOpacity onPress={() => setShowReport(true)}>
+              <Text style={styles.dailyReportBtn}>Take daily report</Text>
+            </TouchableOpacity>}
+          </View>
           <ScrollView contentContainerStyle={styles.doctorsContainer}>
             {
               doctors.map(doctor => {
@@ -80,6 +114,9 @@ function index() {
           </ScrollView>
         </View>
       </View>
+      {
+        showReport && <ReportPopup onSubmit={handleSubmit} reportType={patientType} />
+      }
     </View>
   )
 }
@@ -120,9 +157,17 @@ const styles = StyleSheet.create({
     width: "100%",
     gap: 15
   },
+  blockHeader: {
+    justifyContent: 'space-between',
+    flexDirection: 'row',
+    alignItems: 'center'
+  },
   blockTitle: {
     fontSize: 22,
     fontWeight: 500
+  },
+  dailyReportBtn: {
+    color: "#0984e3"
   },
   doctorsContainer: {
     gap: 10

@@ -20,16 +20,14 @@ function CustomChat({ id, members }: CustomChatProps) {
                 newChannel = streamClient.channel("messaging", {
                     members: members
                 });
-
+                
             await newChannel!.watch();
-            console.log((await newChannel?.queryMembers({}))?.members);
             setChannel(newChannel);
         };
         createAndWatchChannel();
     }, []);
 
     if (!channel) return <Loading />
-    console.log("loaded2")
 
     return (
         <Chat client={streamClient}>

@@ -1,10 +1,7 @@
-import { useLoading } from '@/contexts/LoadingContext';
-import { LinearGradient } from 'expo-linear-gradient'
 import { router } from 'expo-router'
 import React, { useState } from 'react'
-import { AntDesign, MaterialCommunityIcons } from '@expo/vector-icons';
-import Checkbox from "expo-checkbox";
-import { Image, Pressable, StyleSheet, Text, TextInput, TouchableHighlight, TouchableOpacity, View } from 'react-native'
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { Pressable, StyleSheet, Text, View } from 'react-native'
 import RadioBox from '@/components/RadioBox';
 import FormButtons from '@/components/FormButtons';
 

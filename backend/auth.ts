@@ -3,6 +3,7 @@ import { deleteItem, getItem, setItem } from "./storage";
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile } from "firebase/auth";
 import { addDoc, collection, doc, getDoc, getDocs, setDoc, updateDoc, where, query } from "firebase/firestore";
 import { streamClient } from "@/streamConfig";
+import axios from "axios";
 
 export const signupPatientHandler = async (name: string, email: string, father: string, password: string) => {
     try {
@@ -13,7 +14,7 @@ export const signupPatientHandler = async (name: string, email: string, father: 
             displayName: name
         });
 
-        await addDoc(usersCollections, {
+        const doc = await addDoc(usersCollections, {
             uid: userCreds.user.uid,
             name,
             email,
@@ -21,6 +22,8 @@ export const signupPatientHandler = async (name: string, email: string, father: 
             userType: 'patient',
             patientType: false
         })
+
+        await setItem('userUuid', doc.id);
 
         await streamClient.connectUser(
             {
@@ -85,20 +88,9 @@ export const savePatientTypeHandler = async (patientType: 'epilepsy' | 'alzheime
             patientType
         })
 
-        // if (patientType == 'epilepsy') {
-        //     const channel = streamClient.channel("messaging", 'epilepsy_group2', {
-        //         grants: {
-        //             user: [
-        //                 "read-channel",     // allow access to the channel
-        //                 "create-message",    // create messages in the channel
-        //                 "update-message-owner", // update own user messages
-        //                 "delete-message-owner", // delete own user messages
-        //             ],
-        //         },
-        //     });
-        //     await channel.watch();
-        //     await channel.addMembers([doc.data().uid], { text: `${doc.data().name} joined the channel.` })
-        // }
+        if (patientType == 'epilepsy') {
+            await axios.post(`${process.env.EXPO_PUBLIC_SERVER_URL}/api/addToEpilepsyGroup/${auth.currentUser.uid}`);
+        }
 
         return true;
     } catch (e) {
@@ -136,18 +128,18 @@ export const loginHandler = async (email: string, password: string): Promise<fal
         const usersCollections = collection(db, 'users');
         const doc = (await getDocs(query(usersCollections, where("uid", "==", userCreds.user.uid)))).docs[0];
 
-        const connected = await streamClient.connectUser(
+        await setItem('userUuid', doc.id);
+        
+        await streamClient.connectUser(
             {
                 id: userCreds.user.uid,
                 name: doc.data().name
             },
             streamClient.devToken(userCreds.user.uid),
         );
-        console.log("connected");
-        console.log(connected);
 
         if (doc.data().userType != 'patient') return doc.data().userType;
-
+        
         if (!doc.data().patientType) return 'no-type';
 
         return 'patient';

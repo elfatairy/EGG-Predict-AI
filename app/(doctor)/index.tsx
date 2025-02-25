@@ -114,7 +114,7 @@ function index() {
 
 const styles = StyleSheet.create({
     container: {
-        paddingTop: 50,
+        paddingTop: 15,
         paddingHorizontal: 20,
         backgroundColor: "#eae9e5",
         height: "100%",

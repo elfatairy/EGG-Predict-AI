@@ -6,8 +6,7 @@ import React, { useEffect } from 'react'
 import { Text } from 'react-native';
 
 function index() {
-
-    return <CustomChat id="epilepsy_group2"  />
+    return <CustomChat id="epilepsy_group_general"  />
 }
 
 export default index

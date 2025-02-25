@@ -3,11 +3,13 @@ import { getPatientType } from "@/backend/utils";
 import { CustomTabBar, CustomTabProps } from "@/components/CustomTabBar";
 import Loading from "@/components/Loading";
 import { useLoading } from "@/contexts/LoadingContext";
-import { Octicons } from "@expo/vector-icons";
+import { FontAwesome5, Octicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import React, { useReducer } from "react";
 import { useEffect, useRef } from "react";
-
+import * as Location from 'expo-location';
+import Toast from 'react-native-toast-message';
+import { updateLocation } from "@/backend/data";
 
 export default function Index() {
   const { setIsLoading } = useLoading();
@@ -17,8 +19,6 @@ export default function Index() {
   useEffect(() => {
     const calculateTabs = async () => {
       const res = await getPatientType();
-      console.log("res");
-      console.log(res);
       if (!res) {
         alert("There is some issue");
 
@@ -41,7 +41,14 @@ export default function Index() {
           href: "/",
           Icon: <Octicons name="home" size={26} color="#fff" />,
           ActiveIcon: <Octicons name="home" size={26} color="#212528" />,
-          showTabBar: false
+          showTabBar: true
+        },
+        {
+          name: "medicine",
+          href: "/medicine",
+          Icon: <FontAwesome5 name="pills" size={26} color="#fff" />,
+          ActiveIcon: <FontAwesome5 name="pills" size={26} color="#212528" />,
+          showTabBar: true
         },
       ]
 
@@ -60,6 +67,50 @@ export default function Index() {
     }
 
     calculateTabs();
+
+    let subscription: Location.LocationSubscription;
+
+    (async () => {
+      // Request foreground location permissions
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        Toast.show({
+          type: 'error',
+          position: 'bottom',
+          text1: "Location permission denied",
+          text1Style: {
+            fontSize: 16
+          }
+        })
+        return;
+      }
+
+      // Start watching location updates
+      subscription = await Location.watchPositionAsync(
+        {
+          accuracy: Location.Accuracy.High, // High accuracy for precise updates
+          timeInterval: 1000, // Update every 1 second (in milliseconds)
+          distanceInterval: 10, // Update when user moves 10 meters
+        },
+        async (newLocation) => {
+          await updateLocation(newLocation.coords.latitude, newLocation.coords.longitude);
+          
+          // console.log('Location updated:', {
+          //   latitude: newLocation.coords.latitude,
+          //   longitude: newLocation.coords.longitude,
+          //   altitude: newLocation.coords.altitude,
+          //   timestamp: new Date(newLocation.timestamp).toLocaleString(),
+          // });
+        }
+      );
+    })();
+
+    // Cleanup subscription on component unmount
+    return () => {
+      if (subscription) {
+        subscription.remove();
+      }
+    };
   }, []);
 
   if (!tabs.current) return <Loading />;

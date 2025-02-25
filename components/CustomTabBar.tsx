@@ -19,31 +19,31 @@ export function CustomTabBar({ tabs }: { tabs: CustomTabProps[] }) {
     return (
         <Tabs>
             <TabSlot />
-                <TabList onLayout={(e) => { setWidth(e.nativeEvent.layout.width) }} style={{
-                    position: "absolute",
-                    bottom: 25,
-                    left: "50%",
-                    transform: width ? `translateX(-${Math.floor(width / 2)}px)` : '',
-                    borderRadius: 34,
-                    gap: 15,
-                    opacity: Number(tabs.find(tab => tab.href == path)?.showTabBar) ?? 1,
-                    padding: 10,
-                    backgroundColor: "#212528",
-                    alignItems: 'center'
-                }}>
-                    {
-                        tabs && tabs.map(({ name, href, Icon, ActiveIcon }) => <TabTrigger name={name} href={href} key={name} style={{
-                            padding: 14,
-                            backgroundColor: path == href ? "#fff" : "transparent",
-                            borderRadius: "50%",
-                            aspectRatio: 1,
-                            height: 'auto',
-                            alignItems: 'center'
-                        }}>
-                            {path == href ? ActiveIcon : Icon}
-                        </TabTrigger>)
-                    }
-                </TabList>
+            <TabList onLayout={(e) => { setWidth(e.nativeEvent.layout.width) }} style={{
+                position: "absolute",
+                bottom: 25,
+                left: "50%",
+                transform: width ? `translateX(-${Math.floor(width / 2)}px)` : '',
+                borderRadius: 34,
+                gap: 15,
+                opacity: Number(tabs.find(tab => tab.href == path)?.showTabBar) ?? 1,
+                padding: 10,
+                backgroundColor: "#212528",
+                alignItems: 'center'
+            }}>
+                {
+                    tabs && tabs.map(({ name, href, Icon, ActiveIcon }) => <TabTrigger name={name} href={href} key={name} style={{
+                        padding: 14,
+                        backgroundColor: path == href ? "#fff" : "transparent",
+                        borderRadius: "50%",
+                        aspectRatio: 1,
+                        height: 'auto',
+                        alignItems: 'center'
+                    }}>
+                        {path == href ? ActiveIcon : Icon}
+                    </TabTrigger>)
+                }
+            </TabList>
         </Tabs>
     );
 }

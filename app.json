@@ -23,6 +23,10 @@
       "output": "static",
       "favicon": "./assets/images/favicon.png"
     },
+    "notification": {
+      "icon": "./assets/images/notification-icon.png",
+      "color": "#16a085"
+    },
     "plugins": [
       "expo-router",
       [
@@ -42,10 +46,21 @@
             "./assets/images/femaledoctor.png"
           ]
         }
-      ]
+      ],
+      "expo-video",
+      ["expo-build-properties", {
+        "android": {
+          "usesCleartextTraffic": true
+        }
+      }]
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "permissions": {
+      "location": {
+        "foreground": "We need your location to track changes in real-time."
+      }
     },
     "extra": {
       "router": {

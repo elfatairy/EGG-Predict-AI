@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, StyleSheet, Dimensions } from 'react-native';
 import LottieView from 'lottie-react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const { height, width } = Dimensions.get('window');
 
@@ -30,11 +31,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     position: 'absolute',
-    width: Dimensions.get('window').width,   // Full width of the screen
-    height: Dimensions.get('window').height, // Full height of the screen
+    width: Dimensions.get('window').width,
+    height: Dimensions.get('window').height,
   },
   lottie: {
-    width: width * 0.6,  // Adjust the size of the Lottie animation
+    width: width * 0.6,
     height: height * 0.3,
   },
 });

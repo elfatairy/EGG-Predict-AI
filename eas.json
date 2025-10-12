@@ -5,11 +5,7 @@
   },
   "build": {
     "development": {
-      "developmentClient": true,
-      "distribution": "internal",
-      "cache": {
-        "clear": true
-      }
+      "developmentClient": true
     },
     "preview": {
       "distribution": "internal"
